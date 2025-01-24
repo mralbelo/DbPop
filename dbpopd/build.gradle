@@ -34,10 +34,12 @@ dependencies {
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     runtimeOnly("org.yaml:snakeyaml")
     runtimeOnly("com.microsoft.sqlserver:mssql-jdbc:12.4.2.jre11")
+    runtimeOnly("org.postgresql:postgresql:42.7.1")  // PostgreSQL JDBC driver
 
     testImplementation "org.testcontainers:testcontainers:1.18.3"
     testImplementation "org.testcontainers:junit-jupiter:1.18.3"
     testImplementation "org.testcontainers:mssqlserver:1.18.3"
+    testImplementation "org.testcontainers:postgresql:1.18.3"  // PostgreSQL test container
 
     testImplementation project(":test-resources")
 }
@@ -46,8 +48,8 @@ application {
     mainClass.set("org.dandoy.dbpopd.Application")
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("17")
-    targetCompatibility = JavaVersion.toVersion("17")
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 test {
@@ -73,4 +75,3 @@ tasks.register('versionTxt') {
 }
 
 processResources.finalizedBy([versionTxt])
-

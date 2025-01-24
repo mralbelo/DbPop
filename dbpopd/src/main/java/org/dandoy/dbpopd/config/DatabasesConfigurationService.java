@@ -45,26 +45,44 @@ public class DatabasesConfigurationService {
     public record JdbcUrlComponents(String host, int port) {}
 
     static JdbcUrlComponents parseJdbcUrl(String url) {
-        if (!url.startsWith("jdbc:sqlserver://")) {
-            return null;
-        }
-        url = url.substring("jdbc:sqlserver://".length());
-        int i = url.indexOf(';');
-        if (i >= 0) {
-            url = url.substring(0, i);
-        }
-        i = url.indexOf(':');
-        if (i < 0) {
-            return new JdbcUrlComponents(url, 1433);
-        }
+        if (url.startsWith("jdbc:sqlserver://")) {
+            url = url.substring("jdbc:sqlserver://".length());
+            int i = url.indexOf(';');
+            if (i >= 0) {
+                url = url.substring(0, i);
+            }
+            i = url.indexOf(':');
+            if (i < 0) {
+                return new JdbcUrlComponents(url, 1433);
+            }
 
-        String host = url.substring(0, i);
-        try {
-            int port = Integer.parseInt(url.substring(i + 1));
-            return new JdbcUrlComponents(host, port);
-        } catch (NumberFormatException e) {
-            return null;
+            String host = url.substring(0, i);
+            try {
+                int port = Integer.parseInt(url.substring(i + 1));
+                return new JdbcUrlComponents(host, port);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else if (url.startsWith("jdbc:postgresql://")) {
+            url = url.substring("jdbc:postgresql://".length());
+            int i = url.indexOf('/');
+            if (i >= 0) {
+                url = url.substring(0, i);
+            }
+            i = url.indexOf(':');
+            if (i < 0) {
+                return new JdbcUrlComponents(url, 5432);
+            }
+
+            String host = url.substring(0, i);
+            try {
+                int port = Integer.parseInt(url.substring(i + 1));
+                return new JdbcUrlComponents(host, port);
+            } catch (NumberFormatException e) {
+                return null;
+            }
         }
+        return null;
     }
 
     public static boolean canTcpConnect(String url) {

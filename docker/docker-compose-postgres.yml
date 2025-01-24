@@ -1,0 +1,43 @@
+version: "3.9"
+services:
+  dbpop:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - "7104:7104"
+      - "5005:5005"
+    volumes:
+      - ../files/config:/var/opt/dbpop
+    environment:
+      - SOURCE_JDBCURL=jdbc:postgresql://postgres-source:5432/master
+      - SOURCE_USERNAME=postgres
+      - SOURCE_PASSWORD=postgres
+      - TARGET_JDBCURL=jdbc:postgresql://postgres-target:5432/master
+      - TARGET_USERNAME=postgres
+      - TARGET_PASSWORD=postgres
+    depends_on:
+      - postgres-source
+      - postgres-target
+
+  postgres-source:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=master
+    ports:
+      - "5434:5432"
+    volumes:
+      - ../files/config/setup/setup-postgres.sql:/docker-entrypoint-initdb.d/setup.sql
+
+  postgres-target:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=master
+    ports:
+      - "5435:5432"
+    volumes:
+      - ../files/config/setup/setup-postgres.sql:/docker-entrypoint-initdb.d/setup.sql
